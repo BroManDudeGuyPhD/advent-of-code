@@ -17,12 +17,8 @@ $listOne = $listOne | Sort-Object
 $listTwo = $listTwo | Sort-Object
 
 foreach ($location in $listOne){
-
-    #$listOne.IndexOf($location) 
-    $difference = $location..$listTwo[$listOne.IndexOf($location)]
-    $difference = $difference.count -1
-    $totalDistance += $difference
-    Write-Host "Difference between $location and $($listTwo[$listOne.IndexOf($location)]) is $difference"
+    $totalDistance += [Math]::Abs($listOne[$listOne.IndexOf($location)] - $listTwo[$listOne.IndexOf($location)])
 }
+
 
 Write-Host "Total Difference is: $totalDistance"
