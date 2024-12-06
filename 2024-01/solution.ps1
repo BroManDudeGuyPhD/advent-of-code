@@ -18,7 +18,15 @@ $listTwo = $listTwo | Sort-Object
 
 foreach ($location in $listOne){
     $totalDistance += [Math]::Abs($listOne[$listOne.IndexOf($location)] - $listTwo[$listOne.IndexOf($location)])
+
+    $similarityCount = ($listTwo | Where-Object {
+        $_ -eq $location
+    }).count
+
+    $similarityScore += [int]$location * [int]$similarityCount
+    
 }
 
 
 Write-Host "Total Difference is: $totalDistance"
+Write-Host "Similarity score is: $similarityScore"
