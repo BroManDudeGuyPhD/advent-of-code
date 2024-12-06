@@ -1,6 +1,6 @@
 # https://adventofcode.com/2024/day/1
 
-Set-Location "2024-01"
+Set-Location "Day 1"
 
 $fileContents = Get-ChildItem -Filter "*.txt" | Get-Content
 
