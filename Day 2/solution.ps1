@@ -7,6 +7,7 @@ foreach ($line in $fileContents) {
     $report = $line -split (" ")
     [void]$allReports.Add($report)
 }
+
 function Evaluate-Report($report) {
     $lastValue = $decreasing = $increasing = $null
 
@@ -24,37 +25,25 @@ function Evaluate-Report($report) {
         elseif ($null -ne $lastValue) {
             # Evaluates all subsequent items in array
             $difference = [Math]::Abs($lastValue - $item)
-            if ($lastValue -gt $item) {
-                $decreasing = $true
+            if ($difference -eq 1 -or $difference -eq 2 -or $difference -eq 3) {
 
-                if ($difference -eq 1 -or $difference -eq 2 -or $difference -eq 3) {
+                if ($lastValue -gt $item) {
+                    $decreasing = $true
                     Write-Host "    $($lastValue) -> $($item): decrease of $($difference)"
                 }
-                else {
-                    #Breaks loop on unsafe decrease
-                    return "UNSAFE: Large Decrease from $($lastValue) to $($item): $($difference)"
-                }
-                if ($null -ne $decreasing -and $null -ne $increasing) {
-                    return "UNSAFE: Not all increasing"
-                }
-            }
 
-            elseif ($lastValue -lt $item) {
-                $increasing = $true
-
-                if ($difference -eq 1 -or $difference -eq 2 -or $difference -eq 3) {
+                if ($lastValue -lt $item) {
+                    $increasing = $true
                     Write-Host "    $($lastValue) -> $($item): increase of $($difference)"
                 }
-                else {
-                    #Breaks loop on unsafe increase
-                    return "UNSAFE: Large Increase from $($lastValue) to $($item): $($difference)"
-                }
+
                 if ($null -ne $decreasing -and $null -ne $increasing) {
-                    return "UNSAFE: Not all decreasing"
+                    return "UNSAFE: Not all decreasing or increasing"
                 }
             }
-            elseif ($lastValue -eq $item) {
-                return "UNSAFE: No Change from $($lastValue) to $($item)"
+            else {
+                #Breaks loop on unsafe increase
+                return "UNSAFE: Problematic Increase from $($lastValue) to $($item): $($difference)"
             }
         }
         $lastValue = $item;
@@ -67,13 +56,13 @@ foreach ($report in $allReports) {
     $evaluation = Evaluate-Report $report
 
     if ($evaluation -eq "SAFE") {
-        Write-Host "SAFE" -ForegroundColor Green
+        Write-Host "SAFE"
         Write-Host "======================================================"
         $safeCounter += 1
     }
     elseif ($evaluation -like "UNSAFE*") {
-        Write-Host "UNSAFE" -ForegroundColor -Red
-        Write-Host "======================================================" -ForegroundColor -Red
+        Write-Host $evaluation
+        Write-Host "======================================================"
     }
 }
 
